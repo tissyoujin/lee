@@ -1,0 +1,44 @@
+import RPi.GPIO as GPIO
+import time
+import numpy as np
+from pixel_ring import pixel_ringd
+from tuning import Tuning
+
+GPIO.setmode(GPIO.BCM)
+MOTOR1_PIN = 17  
+MOTOR2_PIN = 27  
+GPIO.setup(MOTOR1_PIN, GPIO.OUT)
+GPIO.setup(MOTOR2_PIN, GPIO.OUT)
+
+
+GPIO.output(MOTOR1_PIN, GPIO.LOW)
+GPIO.output(MOTOR2_PIN, GPIO.LOW)
+
+
+tuning = Tuning()
+
+try:
+    while True:
+        direction = tuning.direction
+
+        if direction is not None:
+            print(f"Direction: {direction:.2f} degrees")
+
+           
+            if 170 <= direction <= 190:
+                GPIO.output(MOTOR1_PIN, GPIO.HIGH)
+                GPIO.output(MOTOR2_PIN, GPIO.LOW)
+
+            elif direction >= 300 or direction <= 60:
+                GPIO.output(MOTOR2_PIN, GPIO.HIGH)
+                GPIO.output(MOTOR1_PIN, GPIO.LOW)
+
+            else:
+                GPIO.output(MOTOR1_PIN, GPIO.LOW)
+                GPIO.output(MOTOR2_PIN, GPIO.LOW)
+
+        time.sleep(0.1)
+
+except KeyboardInterrupt:
+    print("the end..")
+    GPIO.cleanup()
